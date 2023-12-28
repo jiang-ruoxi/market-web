@@ -44,6 +44,7 @@
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
+          <el-table-column align="left" label="编号" prop="ID" width="80" sortable />
         <el-table-column align="left" label="日期" width="180">
             <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
         </el-table-column>

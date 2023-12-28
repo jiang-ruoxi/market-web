@@ -15,6 +15,10 @@
        —
       <el-date-picker v-model="searchInfo.endCreatedAt" type="datetime" placeholder="结束日期" :disabled-date="time=> searchInfo.startCreatedAt ? time.getTime() < searchInfo.startCreatedAt.getTime() : false"></el-date-picker>
       </el-form-item>
+        <el-form-item label="类型,1付费,2积分" prop="type">
+         <el-input v-model="searchInfo.type" placeholder="搜索条件" />
+
+        </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="search" @click="onSubmit">查询</el-button>
           <el-button icon="refresh" @click="onReset">重置</el-button>
@@ -44,17 +48,21 @@
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
-        <el-table-column align="left" label="日期" width="180">
-            <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
-        </el-table-column>
+          <el-table-column align="left" label="编号" prop="ID" width="80" sortable />
         <el-table-column align="left" label="名称" prop="name" width="120" />
         <el-table-column align="left" label="现价" prop="cPrice" width="120" />
         <el-table-column align="left" label="原价" prop="oPrice" width="120" />
         <el-table-column align="left" label="有效天数" prop="number" width="120" />
         <el-table-column align="left" label="赠送天数" prop="numberExt" width="120" />
-        <el-table-column align="left" label="类型,1付费,2积分" prop="type" width="120">
-            <template #default="scope">{{ formatBoolean(scope.row.type) }}</template>
-        </el-table-column>
+          <el-table-column align="left" label="类型" prop="type" width="100">
+            <template #default="scope">
+              <el-tag type="success" v-if="scope.row.type==1">付费</el-tag>
+              <el-tag type="warning" v-if="scope.row.type==2">积分</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column align="left" label="创建日期" width="180">
+            <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
+          </el-table-column>
         <el-table-column align="left" label="操作" min-width="120">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -81,23 +89,26 @@
     <el-dialog v-model="dialogFormVisible" :before-close="closeDialog" :title="type==='create'?'添加':'修改'" destroy-on-close>
       <el-scrollbar height="500px">
           <el-form :model="formData" label-position="right" ref="elFormRef" :rules="rule" label-width="80px">
-            <el-form-item label="名称:"  prop="name" >
+            <el-form-item label="名称"  prop="name" >
               <el-input v-model="formData.name" :clearable="true"  placeholder="请输入名称" />
             </el-form-item>
-            <el-form-item label="现价:"  prop="cPrice" >
-              <el-input v-model.number="formData.cPrice" :clearable="true" placeholder="请输入现价" />
+            <el-form-item label="现价"  prop="cPrice" >
+              <el-input-number v-model="formData.cPrice"  style="width:100%" :precision="2" :clearable="true"  />
             </el-form-item>
-            <el-form-item label="原价:"  prop="oPrice" >
-              <el-input v-model.number="formData.oPrice" :clearable="true" placeholder="请输入原价" />
+            <el-form-item label="原价"  prop="oPrice" >
+              <el-input-number v-model="formData.oPrice"  style="width:100%" :precision="2" :clearable="true"  />
             </el-form-item>
-            <el-form-item label="有效天数:"  prop="number" >
+            <el-form-item label="有效天数"  prop="number" >
               <el-input v-model.number="formData.number" :clearable="true" placeholder="请输入有效天数" />
             </el-form-item>
-            <el-form-item label="赠送天数:"  prop="numberExt" >
+            <el-form-item label="赠送天数"  prop="numberExt" >
               <el-input v-model.number="formData.numberExt" :clearable="true" placeholder="请输入赠送天数" />
             </el-form-item>
-            <el-form-item label="类型,1付费,2积分:"  prop="type" >
-              <el-switch v-model="formData.type" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
+            <el-form-item label="类型" prop="type">
+              <el-select v-model="formData.type" placeholder="请选择" style="width:100%" :clearable="true">
+                <el-option label="付费" value="1"></el-option>
+                <el-option label="积分" value="2"></el-option>
+              </el-select>
             </el-form-item>
           </el-form>
       </el-scrollbar>
@@ -127,8 +138,8 @@
                 <el-descriptions-item label="赠送天数">
                         {{ formData.numberExt }}
                 </el-descriptions-item>
-                <el-descriptions-item label="类型,1付费,2积分">
-                    {{ formatBoolean(formData.type) }}
+                <el-descriptions-item label="类型">
+                        {{ formData.type }}
                 </el-descriptions-item>
         </el-descriptions>
       </el-scrollbar>
@@ -162,12 +173,40 @@ const formData = ref({
         oPrice: 0,
         number: 0,
         numberExt: 0,
-        type: false,
         })
 
 
 // 验证规则
 const rule = reactive({
+               name : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+               {
+                   whitespace: true,
+                   message: '不能只输入空格',
+                   trigger: ['input', 'blur'],
+              }
+              ],
+               cPrice : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
+               number : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
+               type : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               },
+              ],
 })
 
 const searchRule = reactive({
@@ -208,9 +247,6 @@ const onSubmit = () => {
     if (!valid) return
     page.value = 1
     pageSize.value = 10
-    if (searchInfo.value.type === ""){
-        searchInfo.value.type=null
-    }
     getTableData()
   })
 }
@@ -363,7 +399,6 @@ const closeDetailShow = () => {
           oPrice: 0,
           number: 0,
           numberExt: 0,
-          type: false,
           }
 }
 
@@ -383,7 +418,6 @@ const closeDialog = () => {
         oPrice: 0,
         number: 0,
         numberExt: 0,
-        type: false,
         }
 }
 // 弹窗确定

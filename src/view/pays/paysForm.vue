@@ -6,10 +6,10 @@
           <el-input v-model="formData.name" :clearable="true" placeholder="请输入" />
        </el-form-item>
         <el-form-item label="现价:" prop="cPrice">
-          <el-input v-model.number="formData.cPrice" :clearable="true" placeholder="请输入" />
+          <el-input-number v-model="formData.cPrice" :precision="2" :clearable="true"></el-input-number>
        </el-form-item>
         <el-form-item label="原价:" prop="oPrice">
-          <el-input v-model.number="formData.oPrice" :clearable="true" placeholder="请输入" />
+          <el-input-number v-model="formData.oPrice" :precision="2" :clearable="true"></el-input-number>
        </el-form-item>
         <el-form-item label="有效天数:" prop="number">
           <el-input v-model.number="formData.number" :clearable="true" placeholder="请输入" />
@@ -18,7 +18,9 @@
           <el-input v-model.number="formData.numberExt" :clearable="true" placeholder="请输入" />
        </el-form-item>
         <el-form-item label="类型,1付费,2积分:" prop="type">
-          <el-switch v-model="formData.type" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
+        <el-select v-model="formData.type" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in [256]" :key="item" :label="item" :value="item" />
+        </el-select>
        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="save">保存</el-button>
@@ -56,10 +58,29 @@ const formData = ref({
             oPrice: 0,
             number: 0,
             numberExt: 0,
-            type: false,
         })
 // 验证规则
 const rule = reactive({
+               name : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               cPrice : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               number : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
+               type : [{
+                   required: true,
+                   message: '',
+                   trigger: ['input','blur'],
+               }],
 })
 
 const elFormRef = ref()

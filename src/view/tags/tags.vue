@@ -1,26 +1,5 @@
 <template>
   <div>
-    <div class="gva-search-box">
-      <el-form ref="elSearchFormRef" :inline="true" :model="searchInfo" class="demo-form-inline" :rules="searchRule" @keyup.enter="onSubmit">
-      <el-form-item label="创建日期" prop="createdAt">
-      <template #label>
-        <span>
-          创建日期
-          <el-tooltip content="搜索范围是开始日期（包含）至结束日期（不包含）">
-            <el-icon><QuestionFilled /></el-icon>
-          </el-tooltip>
-        </span>
-      </template>
-      <el-date-picker v-model="searchInfo.startCreatedAt" type="datetime" placeholder="开始日期" :disabled-date="time=> searchInfo.endCreatedAt ? time.getTime() > searchInfo.endCreatedAt.getTime() : false"></el-date-picker>
-       —
-      <el-date-picker v-model="searchInfo.endCreatedAt" type="datetime" placeholder="结束日期" :disabled-date="time=> searchInfo.startCreatedAt ? time.getTime() < searchInfo.startCreatedAt.getTime() : false"></el-date-picker>
-      </el-form-item>
-        <el-form-item>
-          <el-button type="primary" icon="search" @click="onSubmit">查询</el-button>
-          <el-button icon="refresh" @click="onReset">重置</el-button>
-        </el-form-item>
-      </el-form>
-    </div>
     <div class="gva-table-box">
         <div class="gva-btn-list">
             <el-button type="primary" icon="plus" @click="openDialog">新增</el-button>
@@ -44,14 +23,22 @@
         @selection-change="handleSelectionChange"
         >
         <el-table-column type="selection" width="55" />
-        <el-table-column align="left" label="日期" width="180">
+          <el-table-column align="left" label="编号" prop="ID" width="80" sortable />
+        <el-table-column align="left" label="工种名称" prop="name" width="200" />
+          <el-table-column prop="icon" label="icon图标" max-width="40">
+            <template #default="scope">
+              <img :src="scope.row.icon" min-width="40" height="40"/>
+            </template>
+          </el-table-column>
+          <el-table-column align="left" label="状态" prop="status" width="100">
+            <template #default="scope">
+              <el-tag type="success" v-if="scope.row.status==1">启用</el-tag>
+              <el-tag type="warning" v-if="scope.row.status==0">禁用</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column align="left" label="创建日期" width="180">
             <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
-        </el-table-column>
-        <el-table-column align="left" label="icon名称" prop="name" width="120" />
-        <el-table-column align="left" label="icon链接" prop="icon" width="120" />
-        <el-table-column align="left" label="状态,1启用,0禁用" prop="status" width="120">
-            <template #default="scope">{{ formatBoolean(scope.row.status) }}</template>
-        </el-table-column>
+          </el-table-column>
         <el-table-column align="left" label="操作" min-width="120">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -78,13 +65,13 @@
     <el-dialog v-model="dialogFormVisible" :before-close="closeDialog" :title="type==='create'?'添加':'修改'" destroy-on-close>
       <el-scrollbar height="500px">
           <el-form :model="formData" label-position="right" ref="elFormRef" :rules="rule" label-width="80px">
-            <el-form-item label="icon名称:"  prop="name" >
+            <el-form-item label="工种名称"  prop="name" >
               <el-input v-model="formData.name" :clearable="true"  placeholder="请输入icon名称" />
             </el-form-item>
-            <el-form-item label="icon链接:"  prop="icon" >
+            <el-form-item label="icon链接"  prop="icon" >
               <el-input v-model="formData.icon" :clearable="true"  placeholder="请输入icon链接" />
             </el-form-item>
-            <el-form-item label="状态,1启用,0禁用:"  prop="status" >
+            <el-form-item label="状态"  prop="status" >
               <el-switch v-model="formData.status" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
             </el-form-item>
           </el-form>
@@ -100,13 +87,13 @@
     <el-dialog v-model="detailShow" style="width: 800px" lock-scroll :before-close="closeDetailShow" title="查看详情" destroy-on-close>
       <el-scrollbar height="550px">
         <el-descriptions column="1" border>
-                <el-descriptions-item label="icon名称">
+                <el-descriptions-item label="工种名称">
                         {{ formData.name }}
                 </el-descriptions-item>
                 <el-descriptions-item label="icon链接">
                         {{ formData.icon }}
                 </el-descriptions-item>
-                <el-descriptions-item label="状态,1启用,0禁用">
+                <el-descriptions-item label="状态">
                     {{ formatBoolean(formData.status) }}
                 </el-descriptions-item>
         </el-descriptions>
