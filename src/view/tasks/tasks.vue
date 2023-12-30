@@ -45,17 +45,20 @@
         >
         <el-table-column type="selection" width="55" />
           <el-table-column align="left" label="编号" prop="ID" width="80" sortable />
-        <el-table-column align="left" label="日期" width="180">
-            <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
-        </el-table-column>
-        <el-table-column align="left" label="名称" prop="title" width="120" />
+        <el-table-column align="left" label="任务名称" prop="title" width="120" />
+          <el-table-column align="left" label="工种类型" prop="tagId" width="120" />
         <el-table-column align="left" label="任务描述" prop="desc" width="120" />
-        <el-table-column align="left" label="类型id" prop="tagId" width="120" />
-        <el-table-column align="left" label="用户id" prop="userId" width="120" />
-        <el-table-column align="left" label="状态,2已完成,1招聘中,0待审核" prop="status" width="120">
-            <template #default="scope">{{ formatBoolean(scope.row.status) }}</template>
+        <el-table-column align="left" label="发布者" prop="userId" width="120" />
+        <el-table-column align="left" label="状态" prop="status" width="120">
+          <template #default="scope">
+            <el-tag type="success" v-if="scope.row.status==2">已完成</el-tag>
+            <el-tag type="danger" v-if="scope.row.status==0">待审核</el-tag>
+            <el-tag type="warning" v-if="scope.row.status==1">招聘中</el-tag>
+          </template>
         </el-table-column>
-        <el-table-column align="left" label="工作地址" prop="address" width="120" />
+          <el-table-column align="left" label="发布日期" width="180">
+            <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
+          </el-table-column>
         <el-table-column align="left" label="操作" min-width="120">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -82,22 +85,34 @@
     <el-dialog v-model="dialogFormVisible" :before-close="closeDialog" :title="type==='create'?'添加':'修改'" destroy-on-close>
       <el-scrollbar height="500px">
           <el-form :model="formData" label-position="right" ref="elFormRef" :rules="rule" label-width="80px">
-            <el-form-item label="名称:"  prop="title" >
+            <el-form-item label="任务名称"  prop="title" >
               <el-input v-model="formData.title" :clearable="true"  placeholder="请输入名称" />
             </el-form-item>
-            <el-form-item label="任务描述:"  prop="desc" >
+            <el-form-item label="任务描述"  prop="desc" >
               <el-input v-model="formData.desc" :clearable="true"  placeholder="请输入任务描述" />
             </el-form-item>
-            <el-form-item label="类型id:"  prop="tagId" >
+            <el-form-item label="工种类型"  prop="tagId" >
               <el-input v-model.number="formData.tagId" :clearable="true" placeholder="请输入类型id" />
             </el-form-item>
-            <el-form-item label="用户id:"  prop="userId" >
+
+
+            <el-form-item label="工种类型" prop="tagId">
+              <el-select v-model="formData.tagId" placeholder="请选择" style="width:100%" :clearable="true">
+                <el-option v-for="item in tag_list" :key="item.ID" :label="item.name" :value="item.ID">
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item label="发布用户"  prop="userId" >
               <el-input v-model.number="formData.userId" :clearable="true" placeholder="请输入用户id" />
             </el-form-item>
-            <el-form-item label="状态,2已完成,1招聘中,0待审核:"  prop="status" >
-              <el-switch v-model="formData.status" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
+            <el-form-item label="状态" prop="status">
+              <el-select v-model="formData.type" placeholder="请选择" style="width:100%" :clearable="true">
+                <el-option label="待审核" value="0"></el-option>
+                <el-option label="招聘中" value="1"></el-option>
+                <el-option label="已完成" value="2"></el-option>
+              </el-select>
             </el-form-item>
-            <el-form-item label="工作地址:"  prop="address" >
+            <el-form-item label="工作地址"  prop="address" >
               <el-input v-model="formData.address" :clearable="true"  placeholder="请输入工作地址" />
             </el-form-item>
           </el-form>
@@ -414,6 +429,16 @@ const enterDialog = async () => {
       })
 }
 
+
+//初始化下拉选择项
+const tag_list = ref();
+const getTagListData = async () => {
+  const res = await getTagListAll();
+  if (res.code === 0) {
+    tag_list.value = res.data.list;
+  }
+};
+getTagListData();
 </script>
 
 <style>

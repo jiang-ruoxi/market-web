@@ -15,44 +15,6 @@
        —
       <el-date-picker v-model="searchInfo.endCreatedAt" type="datetime" placeholder="结束日期" :disabled-date="time=> searchInfo.startCreatedAt ? time.getTime() < searchInfo.startCreatedAt.getTime() : false"></el-date-picker>
       </el-form-item>
-        <el-form-item label="用户id" prop="userId">
-            
-             <el-input v-model.number="searchInfo.userId" placeholder="搜索条件" />
-
-        </el-form-item>
-        <el-form-item label="订单" prop="orderId">
-            
-             <el-input v-model.number="searchInfo.orderId" placeholder="搜索条件" />
-
-        </el-form-item>
-            <el-form-item label="类型,1普通会员,2优选工匠,3积分兑换" prop="type">
-            <el-select v-model="searchInfo.type" clearable placeholder="请选择">
-                <el-option
-                    key="true"
-                    label="是"
-                    value="true">
-                </el-option>
-                <el-option
-                    key="false"
-                    label="否"
-                    value="false">
-                </el-option>
-            </el-select>
-            </el-form-item>
-            <el-form-item label="支付状态,1支付完成,0待支付" prop="status">
-            <el-select v-model="searchInfo.status" clearable placeholder="请选择">
-                <el-option
-                    key="true"
-                    label="是"
-                    value="true">
-                </el-option>
-                <el-option
-                    key="false"
-                    label="否"
-                    value="false">
-                </el-option>
-            </el-select>
-            </el-form-item>
         <el-form-item>
           <el-button type="primary" icon="search" @click="onSubmit">查询</el-button>
           <el-button icon="refresh" @click="onReset">重置</el-button>
@@ -83,21 +45,31 @@
         >
         <el-table-column type="selection" width="55" />
           <el-table-column align="left" label="编号" prop="ID" width="80" sortable />
-        <el-table-column align="left" label="日期" width="180">
+          <el-table-column align="center" label="订单ID" prop="orderId" width="150" />
+          <el-table-column align="center" label="用户ID" prop="userId" width="100" />
+          <el-table-column align="center" label="现价" prop="cPrice" width="80" />
+          <el-table-column align="center" label="原价" prop="oPrice" width="80" />
+          <el-table-column align="center" label="订单日期" width="160">
             <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
-        </el-table-column>
-        <el-table-column align="left" label="用户id" prop="userId" width="120" />
-        <el-table-column align="left" label="订单" prop="orderId" width="120" />
-        <el-table-column align="left" label="类型,1普通会员,2优选工匠,3积分兑换" prop="type" width="120">
-            <template #default="scope">{{ formatBoolean(scope.row.type) }}</template>
-        </el-table-column>
-        <el-table-column align="left" label="现价" prop="cPrice" width="120" />
-        <el-table-column align="left" label="原价" prop="oPrice" width="120" />
-        <el-table-column align="left" label="有效天数" prop="number" width="120" />
-        <el-table-column align="left" label="赠送天数" prop="numberExt" width="120" />
-        <el-table-column align="left" label="支付状态,1支付完成,0待支付" prop="status" width="120">
-            <template #default="scope">{{ formatBoolean(scope.row.status) }}</template>
-        </el-table-column>
+          </el-table-column>
+          <el-table-column align="center" label="有效天数" prop="number" width="80" />
+          <el-table-column align="center" label="赠送天数" prop="numberExt" width="80" />
+          <el-table-column align="center" label="类型" prop="type" width="100">
+            <template #default="scope">
+              <el-tag type="success" v-if="scope.row.type==1">会员</el-tag>
+              <el-tag type="danger" v-if="scope.row.type==2">工匠</el-tag>
+              <el-tag type="warning" v-if="scope.row.type==3">积分</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column align="center" label="支付日期" width="160">
+            <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
+          </el-table-column>
+          <el-table-column align="center" label="支付状态" prop="status" width="100">
+            <template #default="scope">
+              <el-tag type="warning" v-if="scope.row.status==0">待支付</el-tag>
+              <el-tag type="success" v-if="scope.row.type==1">支付完成</el-tag>
+            </template>
+          </el-table-column>
         <el-table-column align="left" label="操作" min-width="120">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -124,29 +96,36 @@
     <el-dialog v-model="dialogFormVisible" :before-close="closeDialog" :title="type==='create'?'添加':'修改'" destroy-on-close>
       <el-scrollbar height="500px">
           <el-form :model="formData" label-position="right" ref="elFormRef" :rules="rule" label-width="80px">
-            <el-form-item label="用户id:"  prop="userId" >
+            <el-form-item label="用户ID"  prop="userId" >
               <el-input v-model.number="formData.userId" :clearable="true" placeholder="请输入用户id" />
             </el-form-item>
-            <el-form-item label="订单:"  prop="orderId" >
+            <el-form-item label="订单ID"  prop="orderId" >
               <el-input v-model.number="formData.orderId" :clearable="true" placeholder="请输入订单" />
             </el-form-item>
-            <el-form-item label="类型,1普通会员,2优选工匠,3积分兑换:"  prop="type" >
-              <el-switch v-model="formData.type" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
+            <el-form-item label="类型" prop="type">
+              <el-select v-model="formData.type" placeholder="请选择" style="width:100%" :clearable="true">
+                <el-option label="普通会员" value="1"></el-option>
+                <el-option label="优选工匠" value="2"></el-option>
+                <el-option label="积分兑换" value="3"></el-option>
+              </el-select>
             </el-form-item>
-            <el-form-item label="现价:"  prop="cPrice" >
-              <el-input v-model.number="formData.cPrice" :clearable="true" placeholder="请输入现价" />
+            <el-form-item label="现价"  prop="cPrice" >
+              <el-input-number v-model="formData.cPrice"  style="width:100%" :precision="2" :clearable="true"  />
             </el-form-item>
-            <el-form-item label="原价:"  prop="oPrice" >
-              <el-input v-model.number="formData.oPrice" :clearable="true" placeholder="请输入原价" />
+            <el-form-item label="原价"  prop="oPrice" >
+              <el-input-number v-model="formData.oPrice"  style="width:100%" :precision="2" :clearable="true"  />
             </el-form-item>
-            <el-form-item label="有效天数:"  prop="number" >
+            <el-form-item label="有效天数"  prop="number" >
               <el-input v-model.number="formData.number" :clearable="true" placeholder="请输入有效天数" />
             </el-form-item>
-            <el-form-item label="赠送天数:"  prop="numberExt" >
+            <el-form-item label="赠送天数"  prop="numberExt" >
               <el-input v-model.number="formData.numberExt" :clearable="true" placeholder="请输入赠送天数" />
             </el-form-item>
-            <el-form-item label="支付状态,1支付完成,0待支付:"  prop="status" >
-              <el-switch v-model="formData.status" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
+            <el-form-item label="支付状态"  prop="status" >
+              <el-switch v-model="formData.status" active-color="#13ce66" inactive-color="#ff4949" active-text="已支付" inactive-text="未支付" clearable ></el-switch>
+            </el-form-item>
+            <el-form-item label="支付时间"  prop="payTime" >
+              <el-date-picker v-model="formData.payTime" type="date" style="width:100%" placeholder="选择日期" :clearable="true"  />
             </el-form-item>
           </el-form>
       </el-scrollbar>
@@ -161,14 +140,16 @@
     <el-dialog v-model="detailShow" style="width: 800px" lock-scroll :before-close="closeDetailShow" title="查看详情" destroy-on-close>
       <el-scrollbar height="550px">
         <el-descriptions column="1" border>
-                <el-descriptions-item label="用户id">
+                <el-descriptions-item label="用户ID">
                         {{ formData.userId }}
                 </el-descriptions-item>
-                <el-descriptions-item label="订单">
+                <el-descriptions-item label="订单ID">
                         {{ formData.orderId }}
                 </el-descriptions-item>
-                <el-descriptions-item label="类型,1普通会员,2优选工匠,3积分兑换">
-                    {{ formatBoolean(formData.type) }}
+                <el-descriptions-item label="类型">
+                  <el-tag type="success" v-if="formData.type==1">普通会员</el-tag>
+                  <el-tag type="danger" v-if="formData.type==2">优选工匠</el-tag>
+                  <el-tag type="warning" v-if="formData.type==3">积分兑换</el-tag>
                 </el-descriptions-item>
                 <el-descriptions-item label="现价">
                         {{ formData.cPrice }}
@@ -182,8 +163,12 @@
                 <el-descriptions-item label="赠送天数">
                         {{ formData.numberExt }}
                 </el-descriptions-item>
-                <el-descriptions-item label="支付状态,1支付完成,0待支付">
-                    {{ formatBoolean(formData.status) }}
+                <el-descriptions-item label="支付状态">
+                  <el-tag type="success" v-if="formData.status==1">已支付</el-tag>
+                  <el-tag type="danger" v-if="formData.status==0">待支付</el-tag>
+                </el-descriptions-item>
+                <el-descriptions-item label="支付时间">
+                      {{ formatDate(formData.payTime) }}
                 </el-descriptions-item>
         </el-descriptions>
       </el-scrollbar>
@@ -214,12 +199,12 @@ defineOptions({
 const formData = ref({
         userId: 0,
         orderId: 0,
-        type: false,
         cPrice: 0,
         oPrice: 0,
         number: 0,
         numberExt: 0,
         status: false,
+        payTime: new Date(),
         })
 
 
@@ -249,25 +234,19 @@ const rule = reactive({
                    trigger: ['input','blur'],
                },
               ],
-               oPrice : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               },
-              ],
                number : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
               ],
-               numberExt : [{
+               status : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                },
               ],
-               status : [{
+               payTime : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
@@ -313,9 +292,6 @@ const onSubmit = () => {
     if (!valid) return
     page.value = 1
     pageSize.value = 10
-    if (searchInfo.value.type === ""){
-        searchInfo.value.type=null
-    }
     if (searchInfo.value.status === ""){
         searchInfo.value.status=null
     }
@@ -468,12 +444,12 @@ const closeDetailShow = () => {
   formData.value = {
           userId: 0,
           orderId: 0,
-          type: false,
           cPrice: 0,
           oPrice: 0,
           number: 0,
           numberExt: 0,
           status: false,
+          payTime: new Date(),
           }
 }
 
@@ -490,12 +466,12 @@ const closeDialog = () => {
     formData.value = {
         userId: 0,
         orderId: 0,
-        type: false,
         cPrice: 0,
         oPrice: 0,
         number: 0,
         numberExt: 0,
         status: false,
+        payTime: new Date(),
         }
 }
 // 弹窗确定

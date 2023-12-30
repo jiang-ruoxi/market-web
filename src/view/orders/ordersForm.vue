@@ -9,13 +9,15 @@
           <el-input v-model.number="formData.orderId" :clearable="true" placeholder="请输入" />
        </el-form-item>
         <el-form-item label="类型,1普通会员,2优选工匠,3积分兑换:" prop="type">
-          <el-switch v-model="formData.type" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
+        <el-select v-model="formData.type" placeholder="请选择" style="width:100%" :clearable="true">
+          <el-option v-for="item in []" :key="item" :label="item" :value="item" />
+        </el-select>
        </el-form-item>
         <el-form-item label="现价:" prop="cPrice">
-          <el-input v-model.number="formData.cPrice" :clearable="true" placeholder="请输入" />
+          <el-input-number v-model="formData.cPrice" :precision="2" :clearable="true"></el-input-number>
        </el-form-item>
         <el-form-item label="原价:" prop="oPrice">
-          <el-input v-model.number="formData.oPrice" :clearable="true" placeholder="请输入" />
+          <el-input-number v-model="formData.oPrice" :precision="2" :clearable="true"></el-input-number>
        </el-form-item>
         <el-form-item label="有效天数:" prop="number">
           <el-input v-model.number="formData.number" :clearable="true" placeholder="请输入" />
@@ -25,6 +27,9 @@
        </el-form-item>
         <el-form-item label="支付状态,1支付完成,0待支付:" prop="status">
           <el-switch v-model="formData.status" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
+       </el-form-item>
+        <el-form-item label="支付时间:" prop="payTime">
+          <el-date-picker v-model="formData.payTime" type="date" placeholder="选择日期" :clearable="true"></el-date-picker>
        </el-form-item>
         <el-form-item>
           <el-button type="primary" @click="save">保存</el-button>
@@ -59,12 +64,12 @@ const type = ref('')
 const formData = ref({
             userId: 0,
             orderId: 0,
-            type: false,
             cPrice: 0,
             oPrice: 0,
             number: 0,
             numberExt: 0,
             status: false,
+            payTime: new Date(),
         })
 // 验证规则
 const rule = reactive({
@@ -88,22 +93,17 @@ const rule = reactive({
                    message: '',
                    trigger: ['input','blur'],
                }],
-               oPrice : [{
-                   required: true,
-                   message: '',
-                   trigger: ['input','blur'],
-               }],
                number : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                }],
-               numberExt : [{
+               status : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],
                }],
-               status : [{
+               payTime : [{
                    required: true,
                    message: '',
                    trigger: ['input','blur'],

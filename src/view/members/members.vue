@@ -45,23 +45,34 @@
         >
         <el-table-column type="selection" width="55" />
           <el-table-column align="left" label="编号" prop="ID" width="80" sortable />
-        <el-table-column align="left" label="日期" width="180">
+          <el-table-column align="center" label="userId" prop="userId" width="100"/>
+          <el-table-column align="center" label="openId" prop="openId" width="150%" :show-overflow-tooltip='true'/>
+        <el-table-column align="center" label="昵称" prop="nickName" width="120" />
+          <el-table-column prop="headUrl" label="头像" max-width="40">
+            <template #default="scope">
+              <img :src="scope.row.headUrl" min-width="40" height="40"/>
+            </template>
+          </el-table-column>
+        <el-table-column align="center" label="姓名" prop="realName" width="120" />
+        <el-table-column align="center" label="手机号" prop="mobile" width="120" />
+        <el-table-column align="center" label="工匠类型" prop="isBest" width="120">
+          <template #default="scope">
+            <el-tag type="success" v-if="scope.row.isBest==1">优选工匠</el-tag>
+            <el-tag type="danger" v-if="scope.row.isBest==0">普通工匠</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="主营类型" prop="tagId" width="120" />
+        <el-table-column align="center" label="邀请人" prop="parentId" width="120" />
+        <el-table-column align="center" label="是否为会员" prop="isMember" width="120">
+          <template #default="scope">
+            <el-tag type="success" v-if="scope.row.isMember==1">是</el-tag>
+            <el-tag type="danger" v-if="scope.row.isMember==0">否</el-tag>
+          </template>
+        </el-table-column>
+        <el-table-column align="center" label="会员有效日期" prop="memberLimit" width="120" />
+          <el-table-column align="left" label="注册时间" width="180">
             <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
-        </el-table-column>
-        <el-table-column align="left" label="用户OpendId" prop="openId" width="120" />
-        <el-table-column align="left" label="用户昵称" prop="nickName" width="120" />
-        <el-table-column align="left" label="用户头像" prop="headUrl" width="120" />
-        <el-table-column align="left" label="用户姓名" prop="realName" width="120" />
-        <el-table-column align="left" label="手机号" prop="mobile" width="120" />
-        <el-table-column align="left" label="优选工匠,1是,0否" prop="isBest" width="120">
-            <template #default="scope">{{ formatBoolean(scope.row.isBest) }}</template>
-        </el-table-column>
-        <el-table-column align="left" label="主营类型" prop="tagId" width="120" />
-        <el-table-column align="left" label="邀请人" prop="parentId" width="120" />
-        <el-table-column align="left" label="是否为会员,1是,0否" prop="isMember" width="120">
-            <template #default="scope">{{ formatBoolean(scope.row.isMember) }}</template>
-        </el-table-column>
-        <el-table-column align="left" label="会员截止日期" prop="memberLimit" width="120" />
+          </el-table-column>
         <el-table-column align="left" label="操作" min-width="120">
             <template #default="scope">
             <el-button type="primary" link class="table-button" @click="getDetails(scope.row)">
@@ -87,35 +98,35 @@
     </div>
     <el-dialog v-model="dialogFormVisible" :before-close="closeDialog" :title="type==='create'?'添加':'修改'" destroy-on-close>
       <el-scrollbar height="500px">
-          <el-form :model="formData" label-position="right" ref="elFormRef" :rules="rule" label-width="80px">
-            <el-form-item label="用户OpendId:"  prop="openId" >
-              <el-input v-model="formData.openId" :clearable="true"  placeholder="请输入用户OpendId" />
+          <el-form :model="formData" label-position="right" ref="elFormRef" :rules="rule" label-width="100px">
+            <el-form-item label="OpenId"  prop="openId" >
+              <el-input v-model="formData.openId" :clearable="true"  placeholder="请输入用户OpenId" />
             </el-form-item>
-            <el-form-item label="用户昵称:"  prop="nickName" >
+            <el-form-item label="用户昵称"  prop="nickName" >
               <el-input v-model="formData.nickName" :clearable="true"  placeholder="请输入用户昵称" />
             </el-form-item>
-            <el-form-item label="用户头像:"  prop="headUrl" >
+            <el-form-item label="用户头像"  prop="headUrl" >
               <el-input v-model="formData.headUrl" :clearable="true"  placeholder="请输入用户头像" />
             </el-form-item>
-            <el-form-item label="用户姓名:"  prop="realName" >
+            <el-form-item label="用户姓名"  prop="realName" >
               <el-input v-model="formData.realName" :clearable="true"  placeholder="请输入用户姓名" />
             </el-form-item>
-            <el-form-item label="手机号:"  prop="mobile" >
+            <el-form-item label="手机号"  prop="mobile" >
               <el-input v-model="formData.mobile" :clearable="true"  placeholder="请输入手机号" />
             </el-form-item>
-            <el-form-item label="优选工匠,1是,0否:"  prop="isBest" >
-              <el-switch v-model="formData.isBest" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
+            <el-form-item label="工匠类型"  prop="isBest" >
+              <el-switch v-model="formData.isBest" active-color="#13ce66" inactive-color="#ff4949" active-text="优选工匠" inactive-text="普通工匠" clearable ></el-switch>
             </el-form-item>
-            <el-form-item label="主营类型:"  prop="tagId" >
+            <el-form-item label="主营类型"  prop="tagId" >
               <el-input v-model.number="formData.tagId" :clearable="true" placeholder="请输入主营类型" />
             </el-form-item>
-            <el-form-item label="邀请人:"  prop="parentId" >
+            <el-form-item label="邀请人"  prop="parentId" >
               <el-input v-model.number="formData.parentId" :clearable="true" placeholder="请输入邀请人" />
             </el-form-item>
-            <el-form-item label="是否为会员,1是,0否:"  prop="isMember" >
-              <el-switch v-model="formData.isMember" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
+            <el-form-item label="会员类型"  prop="isMember" >
+              <el-switch v-model="formData.isMember" active-color="#13ce66" inactive-color="#ff4949" active-text="会员" inactive-text="非会员" clearable ></el-switch>
             </el-form-item>
-            <el-form-item label="会员截止日期:"  prop="memberLimit" >
+            <el-form-item label="会员有效日期"  prop="memberLimit" >
               <el-input v-model.number="formData.memberLimit" :clearable="true" placeholder="请输入会员截止日期" />
             </el-form-item>
           </el-form>
@@ -131,23 +142,24 @@
     <el-dialog v-model="detailShow" style="width: 800px" lock-scroll :before-close="closeDetailShow" title="查看详情" destroy-on-close>
       <el-scrollbar height="550px">
         <el-descriptions column="1" border>
-                <el-descriptions-item label="用户OpendId">
+                <el-descriptions-item label="OpenId">
                         {{ formData.openId }}
                 </el-descriptions-item>
-                <el-descriptions-item label="用户昵称">
+                <el-descriptions-item label="昵称">
                         {{ formData.nickName }}
                 </el-descriptions-item>
-                <el-descriptions-item label="用户头像">
+                <el-descriptions-item label="头像">
                         {{ formData.headUrl }}
                 </el-descriptions-item>
-                <el-descriptions-item label="用户姓名">
+                <el-descriptions-item label="姓名">
                         {{ formData.realName }}
                 </el-descriptions-item>
                 <el-descriptions-item label="手机号">
                         {{ formData.mobile }}
                 </el-descriptions-item>
-                <el-descriptions-item label="优选工匠,1是,0否">
-                    {{ formatBoolean(formData.isBest) }}
+                <el-descriptions-item label="优选工匠">
+                  <el-tag type="success" v-if="formData.isBest==1">是</el-tag>
+                  <el-tag type="danger" v-if="formData.isBest==0">否</el-tag>
                 </el-descriptions-item>
                 <el-descriptions-item label="主营类型">
                         {{ formData.tagId }}
@@ -155,8 +167,9 @@
                 <el-descriptions-item label="邀请人">
                         {{ formData.parentId }}
                 </el-descriptions-item>
-                <el-descriptions-item label="是否为会员,1是,0否">
-                    {{ formatBoolean(formData.isMember) }}
+                <el-descriptions-item label="会员类型">
+                  <el-tag type="success" v-if="formData.isMember==1">会员</el-tag>
+                  <el-tag type="danger" v-if="formData.isMember==0">非会员</el-tag>
                 </el-descriptions-item>
                 <el-descriptions-item label="会员截止日期">
                         {{ formData.memberLimit }}
