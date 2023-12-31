@@ -71,8 +71,8 @@
             <el-form-item label="Banner链接"  prop="image" >
               <el-input v-model="formData.image" :clearable="true"  placeholder="请输入banner链接" />
             </el-form-item>
-            <el-form-item label="状态"  prop="status" >
-              <el-switch v-model="formData.status" active-color="#13ce66" inactive-color="#ff4949" active-text="是" inactive-text="否" clearable ></el-switch>
+            <el-form-item label="启用状态"  prop="status" >
+              <el-switch v-model="formData.status" active-color="#13ce66" inactive-color="#ff4949" active-text="启用" inactive-text="禁用" clearable ></el-switch>
             </el-form-item>
           </el-form>
       </el-scrollbar>
@@ -94,7 +94,8 @@
                         {{ formData.image }}
                 </el-descriptions-item>
                 <el-descriptions-item label="启用状态">
-                    {{ formatBoolean(formData.status) }}
+                  <el-tag type="success" v-if="formData.status==1">启用</el-tag>
+                  <el-tag type="danger" v-if="formData.status==0">禁用</el-tag>
                 </el-descriptions-item>
         </el-descriptions>
       </el-scrollbar>
