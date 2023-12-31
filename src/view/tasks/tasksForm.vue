@@ -53,9 +53,9 @@ const type = ref('')
 const formData = ref({
             title: '',
             desc: '',
-            tagId: 0,
-            userId: 0,
-            status: false,
+            tagId: '',
+            userId: '',
+            status: '',
             address: '',
         })
 // 验证规则

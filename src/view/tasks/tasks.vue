@@ -45,10 +45,14 @@
         >
         <el-table-column type="selection" width="55" />
           <el-table-column align="left" label="编号" prop="ID" width="80" sortable />
-        <el-table-column align="left" label="任务名称" prop="title" width="120" />
-          <el-table-column align="left" label="工种类型" prop="tagId" width="120" />
-        <el-table-column align="left" label="任务描述" prop="desc" width="120" />
-        <el-table-column align="left" label="发布者" prop="userId" width="120" />
+        <el-table-column align="left" label="任务名称" prop="title" width="200%" :show-overflow-tooltip='true' />
+          <el-table-column align="center" label="工种类型" prop="tagId" width="100">
+            <template #default="scope">
+              <el-tag :type="danger">{{ scope.row.tag_name }}</el-tag>
+            </template>
+          </el-table-column>
+        <el-table-column align="left" label="任务描述" prop="desc" width="300%" :show-overflow-tooltip='true' />
+        <el-table-column align="center" label="发布者" prop="userId" width="120" />
         <el-table-column align="left" label="状态" prop="status" width="120">
           <template #default="scope">
             <el-tag type="success" v-if="scope.row.status==2">已完成</el-tag>
@@ -91,11 +95,6 @@
             <el-form-item label="任务描述"  prop="desc" >
               <el-input v-model="formData.desc" :clearable="true"  placeholder="请输入任务描述" />
             </el-form-item>
-            <el-form-item label="工种类型"  prop="tagId" >
-              <el-input v-model.number="formData.tagId" :clearable="true" placeholder="请输入类型id" />
-            </el-form-item>
-
-
             <el-form-item label="工种类型" prop="tagId">
               <el-select v-model="formData.tagId" placeholder="请选择" style="width:100%" :clearable="true">
                 <el-option v-for="item in tag_list" :key="item.ID" :label="item.name" :value="item.ID">
@@ -106,7 +105,7 @@
               <el-input v-model.number="formData.userId" :clearable="true" placeholder="请输入用户id" />
             </el-form-item>
             <el-form-item label="状态" prop="status">
-              <el-select v-model="formData.type" placeholder="请选择" style="width:100%" :clearable="true">
+              <el-select v-model="formData.status" placeholder="请选择" style="width:100%" :clearable="true">
                 <el-option label="待审核" value="0"></el-option>
                 <el-option label="招聘中" value="1"></el-option>
                 <el-option label="已完成" value="2"></el-option>
@@ -162,6 +161,10 @@ import {
   getTasksList
 } from '@/api/tasks'
 
+import {
+  getTagListAll
+} from '@/api/tags'
+
 // 全量引入格式化工具 请按需保留
 import { getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile } from '@/utils/format'
 import { ElMessage, ElMessageBox } from 'element-plus'
@@ -175,9 +178,9 @@ defineOptions({
 const formData = ref({
         title: '',
         desc: '',
-        tagId: 0,
-        userId: 0,
-        status: false,
+        tagId: '',
+        userId: '',
+        status: '',
         address: '',
         })
 
@@ -329,6 +332,15 @@ const updateTasksFunc = async(row) => {
     }
 }
 
+// 审核行
+const verifyTasksFunc = async(row) => {
+  const res = await findTasks({ ID: row.ID })
+  type.value = 'verify'
+  if (res.code === 0) {
+    formData.value = res.data.retasks
+    dialogFormVisible.value = true
+  }
+}
 
 // 删除行
 const deleteTasksFunc = async (row) => {

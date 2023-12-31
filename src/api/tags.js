@@ -95,3 +95,19 @@ export const getTagsList = (params) => {
     params
   })
 }
+
+// @Tags Tags
+// @Summary 分页获取zm_tags表列表
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Param data query request.PageInfo true "分页获取zm_tags表列表"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
+// @Router /tags/getTagListAll [get]
+export const getTagListAll = (params) => {
+  return service({
+    url: '/tags/getTagsListAll',
+    method: 'get',
+    params
+  })
+}
