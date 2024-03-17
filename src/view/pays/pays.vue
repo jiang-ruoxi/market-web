@@ -50,10 +50,22 @@
         <el-table-column align="left" label="原价" prop="oPrice" width="120" />
         <el-table-column align="left" label="有效天数" prop="number" width="120" />
         <el-table-column align="left" label="赠送天数" prop="numberExt" width="120" />
+          <el-table-column align="left" label="状态" prop="status" width="100">
+            <template #default="scope">
+              <el-tag type="success" v-if="scope.row.status==1">启用</el-tag>
+              <el-tag type="warning" v-if="scope.row.status==0">禁用</el-tag>
+            </template>
+          </el-table-column>
           <el-table-column align="left" label="类型" prop="type" width="100">
             <template #default="scope">
-              <el-tag type="success" v-if="scope.row.type==1">付费</el-tag>
-              <el-tag type="warning" v-if="scope.row.type==2">积分</el-tag>
+              <el-tag type="danger" v-if="scope.row.type==1">付费</el-tag>
+              <el-tag type="info" v-if="scope.row.type==2">积分</el-tag>
+            </template>
+          </el-table-column>
+          <el-table-column align="left" label="默认状态" prop="enable" width="100">
+            <template #default="scope">
+              <el-tag type="success" v-if="scope.row.checked==1">默认</el-tag>
+              <el-tag type="info" v-if="scope.row.checked==0">其他</el-tag>
             </template>
           </el-table-column>
           <el-table-column align="left" label="创建日期" width="180">
@@ -100,11 +112,20 @@
             <el-form-item label="赠送天数"  prop="numberExt" >
               <el-input v-model.number="formData.numberExt" :clearable="true" placeholder="请输入赠送天数" />
             </el-form-item>
+            <el-form-item label="默认类型"  prop="checked" >
+              <el-switch v-model="formData.checked" active-color="#13ce66" inactive-color="#ff4949" active-text="默认" inactive-text="其他" clearable ></el-switch>
+            </el-form-item>
+            <el-form-item label="排序"  prop="sort" >
+              <el-input v-model.number="formData.sort" :clearable="true" placeholder="请输入顺序" />
+            </el-form-item>
             <el-form-item label="类型" prop="type">
               <el-select v-model="formData.type" placeholder="请选择" style="width:100%" :clearable="true">
                 <el-option label="付费" value="1"></el-option>
                 <el-option label="积分" value="2"></el-option>
               </el-select>
+            </el-form-item>
+            <el-form-item label="启用状态"  prop="status" >
+              <el-switch v-model="formData.status" active-color="#13ce66" inactive-color="#ff4949" active-text="启用" inactive-text="禁用" clearable ></el-switch>
             </el-form-item>
           </el-form>
       </el-scrollbar>
@@ -169,6 +190,9 @@ const formData = ref({
         oPrice: 0,
         number: 0,
         numberExt: 0,
+        sort: 999,
+        checked:0,
+  status: true,
         })
 
 
@@ -196,6 +220,12 @@ const rule = reactive({
                    message: '',
                    trigger: ['input','blur'],
                },
+              ],
+              sort : [{
+                required: true,
+                message: '',
+                trigger: ['input','blur'],
+              },
               ],
                type : [{
                    required: true,
