@@ -76,10 +76,11 @@
                         />
                     </el-form-item>
                     <el-form-item label="现价" prop="cPrice">
-                        <el-input-number v-model="formData.cPrice" style="width:100%" :precision="2" :clearable="true"/>
+                        <el-input-number v-model="formData.cPrice" style="width:100%" placeholder="请输入有效现价"
+                                         :clearable="true"/>
                     </el-form-item>
                     <el-form-item label="原价" prop="oPrice">
-                        <el-input-number v-model="formData.oPrice" style="width:100%" :precision="2" :clearable="true"/>
+                        <el-input-number v-model="formData.oPrice" style="width:100%" :clearable="true"/>
                     </el-form-item>
                     <el-form-item label="有效天数" prop="number">
                         <el-input v-model.number="formData.number" :clearable="true" placeholder="请输入有效天数"/>
@@ -99,7 +100,6 @@
                     <el-form-item
                             label="启用状态"
                             prop="status"
-                            required
                     >
                         <el-switch
                                 v-model="formData.status"
@@ -138,7 +138,6 @@
     // 自动化生成的字典（可能为空）以及字段
     const formData = ref({
         name: '',
-        cPrice: 0,
         oPrice: 0,
         number: 0,
         numberExt: 0,
@@ -186,6 +185,11 @@
         },
         ],
         checked: [{
+            required: true,
+            message: '',
+            trigger: ['input', 'blur'],
+        },
+        ], status: [{
             required: true,
             message: '',
             trigger: ['input', 'blur'],
