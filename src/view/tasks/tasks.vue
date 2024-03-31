@@ -129,17 +129,11 @@
 
 <script setup>
     import {
-        createTasks,
         deleteTasks,
         deleteTasksByIds,
-        updateTasks,
         findTasks,
         getTasksList
     } from '@/api/tasks'
-
-    import {
-        getTagListAll
-    } from '@/api/tags'
 
     // 全量引入格式化工具 请按需保留
     import {getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile} from '@/utils/format'
@@ -375,43 +369,6 @@
             address: '',
         }
     }
-    // 弹窗确定
-    const enterDialog = async () => {
-        elFormRef.value?.validate(async (valid) => {
-            if (!valid) return
-            let res
-            switch (type.value) {
-                case 'create':
-                    res = await createTasks(formData.value)
-                    break
-                case 'update':
-                    res = await updateTasks(formData.value)
-                    break
-                default:
-                    res = await createTasks(formData.value)
-                    break
-            }
-            if (res.code === 0) {
-                ElMessage({
-                    type: 'success',
-                    message: '创建/更改成功'
-                })
-                closeDialog()
-                getTableData()
-            }
-        })
-    }
-
-
-    //初始化下拉选择项
-    const tag_list = ref();
-    const getTagListData = async () => {
-        const res = await getTagListAll();
-        if (res.code === 0) {
-            tag_list.value = res.data.list;
-        }
-    };
-    getTagListData();
 </script>
 
 <style>
