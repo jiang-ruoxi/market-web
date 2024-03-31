@@ -52,8 +52,7 @@
                 <el-table-column align="left" label="编号" prop="ID" width="80" sortable/>
                 <el-table-column align="center" label="订单ID" prop="orderId" width="150"/>
                 <el-table-column align="center" label="用户ID" prop="userId" width="120"/>
-                <el-table-column align="center" label="现价(元)" prop="cPrice" width="80"/>
-                <el-table-column align="center" label="原价(元)" prop="oPrice" width="80"/>
+                <el-table-column align="center" label="支付金额(元)" prop="cPrice" width="120"/>
                 <el-table-column align="center" label="订单日期" width="160">
                     <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
                 </el-table-column>
