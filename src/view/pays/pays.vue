@@ -13,30 +13,31 @@
                     @selection-change="handleSelectionChange"
             >
                 <el-table-column align="left" label="编号" prop="ID" width="80" sortable/>
-                <el-table-column align="left" label="价位名称" prop="name" width="120"/>
-                <el-table-column align="left" label="现价(元)" prop="cPrice" width="120"/>
-                <el-table-column align="left" label="原价(元)" prop="oPrice" width="120"/>
-                <el-table-column align="left" label="有效天数" prop="number" width="120"/>
-                <el-table-column align="left" label="赠送天数" prop="numberExt" width="120"/>
-                <el-table-column align="left" label="启用状态" prop="status" width="100">
+                <el-table-column align="center" label="价位名称" prop="name" width="120"/>
+                <el-table-column align="center" label="现价(元)" prop="cPrice" width="120"/>
+                <el-table-column align="center" label="原价(元)" prop="oPrice" width="120"/>
+                <el-table-column align="center" label="有效天数" prop="number" width="120"/>
+                <el-table-column align="center" label="赠送天数" prop="numberExt" width="120"/>
+                <el-table-column align="center" label="启用状态" prop="status" width="100">
                     <template #default="scope">
                         <el-tag type="success" v-if="scope.row.status==1">启用</el-tag>
                         <el-tag type="warning" v-if="scope.row.status==0">禁用</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column align="left" label="类型" prop="type" width="100">
+                <el-table-column align="center" label="类型" prop="type" width="100">
                     <template #default="scope">
                         <el-tag type="danger" v-if="scope.row.type==1">会员付费</el-tag>
                         <el-tag type="primary" v-if="scope.row.type==2">开通工匠</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column align="left" label="默认状态" prop="enable" width="100">
+                <el-table-column align="center" label="默认状态" prop="enable" width="100">
                     <template #default="scope">
                         <el-tag type="success" v-if="scope.row.checked==1">默认选中</el-tag>
                         <el-tag type="info" v-if="scope.row.checked==0">非选中</el-tag>
                     </template>
                 </el-table-column>
-                <el-table-column align="left" label="创建日期" width="180">
+                <el-table-column align="center" label="排序(倒序)" prop="sort" width="120"/>
+                <el-table-column align="center" label="创建日期" width="180">
                     <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
                 </el-table-column>
                 <el-table-column align="left" label="操作" min-width="120">

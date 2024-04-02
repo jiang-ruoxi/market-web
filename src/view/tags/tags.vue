@@ -12,14 +12,15 @@
                     row-key="ID"
                     @selection-change="handleSelectionChange"
             >
-                <el-table-column align="left" label="编号" prop="ID" width="80" sortable/>
-                <el-table-column align="left" label="工种名称" prop="name" width="150"/>
+                <el-table-column align="center" label="编号" prop="ID" width="80" sortable/>
+                <el-table-column align="center" label="工种名称" prop="name" width="150"/>
                 <el-table-column prop="icon" label="icon图标" width="150">
                     <template #default="scope">
                         <img :src="scope.row.icon" min-width="40" height="40"/>
                     </template>
                 </el-table-column>
-                <el-table-column align="left" label="状态" prop="status" width="100">
+                <el-table-column align="center" label="排序(倒序)" prop="sort" width="100"/>
+                <el-table-column align="center" label="状态" prop="status" width="100">
                     <template #default="scope">
                         <el-tag type="success" v-if="scope.row.status==1">启用</el-tag>
                         <el-tag type="warning" v-if="scope.row.status==0">禁用</el-tag>
@@ -99,7 +100,8 @@
                         <el-input v-model.number="formData.sort" :clearable="true" placeholder="请输入顺序"/>
                     </el-form-item>
                     <el-descriptions-item label="状态">
-                        {{ formatBoolean(formData.status) }}
+                        <el-tag type="success" v-if="formData.status==1">启用</el-tag>
+                        <el-tag type="warning" v-if="formData.status==0">禁用</el-tag>
                     </el-descriptions-item>
                 </el-descriptions>
             </el-scrollbar>
