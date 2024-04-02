@@ -48,14 +48,11 @@
                     row-key="ID"
                     @selection-change="handleSelectionChange"
             >
-                <el-table-column type="selection" width="55"/>
-                <el-table-column align="left" label="编号" prop="ID" width="80" sortable/>
                 <el-table-column align="center" label="订单ID" prop="orderId" width="150"/>
                 <el-table-column align="center" label="用户ID" prop="userId" width="120"/>
+                <el-table-column align="center" label="订单名称" prop="name" width="120"/>
                 <el-table-column align="center" label="支付金额(元)" prop="cPrice" width="120"/>
-                <el-table-column align="center" label="订单日期" width="160">
-                    <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
-                </el-table-column>
+                <el-table-column align="center" label="支付流水号" prop="paymentNumber" :show-overflow-tooltip='true' width="200"/>
                 <el-table-column align="center" label="有效天数" prop="number" width="80"/>
                 <el-table-column align="center" label="赠送天数" prop="numberExt" width="80"/>
                 <el-table-column align="center" label="类型" prop="type" width="100">
