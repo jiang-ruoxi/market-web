@@ -52,7 +52,8 @@
                 <el-table-column align="center" label="用户ID" prop="userId" width="120"/>
                 <el-table-column align="center" label="订单名称" prop="name" width="120"/>
                 <el-table-column align="center" label="支付金额(元)" prop="cPrice" width="120"/>
-                <el-table-column align="center" label="支付流水号" prop="paymentNumber" :show-overflow-tooltip='true' width="200"/>
+                <el-table-column align="center" label="支付流水号" prop="paymentNumber" :show-overflow-tooltip='true'
+                                 width="200"/>
                 <el-table-column align="center" label="有效天数" prop="number" width="80"/>
                 <el-table-column align="center" label="赠送天数" prop="numberExt" width="80"/>
                 <el-table-column align="center" label="类型" prop="type" width="100">
@@ -80,7 +81,12 @@
                             </el-icon>
                             查看详情
                         </el-button>
-                        <el-button type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>
+                        <el-button type="primary" v-if="scope.row.status == 1" link icon="delete"
+                                   @click="refundRow(scope.row)">退费
+                        </el-button>
+                        <el-button type="primary" v-if="scope.row.status < 1" link icon="delete"
+                                   @click="deleteRow(scope.row)">删除
+                        </el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -142,7 +148,8 @@
         deleteOrders,
         deleteOrdersByIds,
         findOrders,
-        getOrdersList
+        getOrdersList,
+        refundOrders
     } from '@/api/orders'
 
     // 全量引入格式化工具 请按需保留
@@ -313,6 +320,28 @@
         })
     }
 
+    //退费
+    const refundRow = (row) => {
+        ElMessageBox.confirm('确定要进行退费操作吗?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        }).then(() => {
+            refundOrdersFunc(row)
+        })
+    }
+
+    // 退费行
+    const refundOrdersFunc = async (row) => {
+        const res = await refundOrders({ID: row.ID})
+        if (res.code === 0) {
+            ElMessage({
+                type: 'success',
+                message: '退费成功'
+            })
+            getTableData()
+        }
+    }
 
     // 批量删除控制标记
     const deleteVisible = ref(false)

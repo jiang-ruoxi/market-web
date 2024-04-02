@@ -95,3 +95,19 @@ export const getOrdersList = (params) => {
     params
   })
 }
+
+// @Tags Orders
+// @Summary 删除zmOrder表
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Param data body model.Orders true "删除zmOrder表"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"删除成功"}"
+// @Router /orders/refundOrders [delete]
+export const refundOrders = (params) => {
+    return service({
+        url: '/orders/refundOrders',
+        method: 'get',
+        params
+    })
+}
