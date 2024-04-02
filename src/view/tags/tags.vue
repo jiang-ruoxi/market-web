@@ -3,19 +3,6 @@
         <div class="gva-table-box">
             <div class="gva-btn-list">
                 <el-button type="primary" icon="plus" @click="openDialog">新增</el-button>
-                <el-popover v-model:visible="deleteVisible" :disabled="!multipleSelection.length" placement="top"
-                            width="160">
-                    <p>确定要删除吗？</p>
-                    <div style="text-align: right; margin-top: 8px;">
-                        <el-button type="primary" link @click="deleteVisible = false">取消</el-button>
-                        <el-button type="primary" @click="onDelete">确定</el-button>
-                    </div>
-                    <template #reference>
-                        <el-button icon="delete" style="margin-left: 10px;" :disabled="!multipleSelection.length"
-                                   @click="deleteVisible = true">删除
-                        </el-button>
-                    </template>
-                </el-popover>
             </div>
             <el-table
                     ref="multipleTable"
@@ -25,7 +12,6 @@
                     row-key="ID"
                     @selection-change="handleSelectionChange"
             >
-                <el-table-column type="selection" width="55"/>
                 <el-table-column align="left" label="编号" prop="ID" width="80" sortable/>
                 <el-table-column align="left" label="工种名称" prop="name" width="150"/>
                 <el-table-column prop="icon" label="icon图标" width="150">
@@ -50,7 +36,7 @@
                         <el-button type="primary" link icon="edit" class="table-button"
                                    @click="updateTagsFunc(scope.row)">变更
                         </el-button>
-                        <el-button type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>
+                        <el-button type="primary" v-if="scope.row.ID > 1" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -75,6 +61,9 @@
                     </el-form-item>
                     <el-form-item label="icon链接" prop="icon">
                         <el-input v-model="formData.icon" :clearable="true" placeholder="请输入icon链接"/>
+                    </el-form-item>
+                    <el-form-item label="排序" prop="sort">
+                        <el-input v-model.number="formData.sort" :clearable="true" placeholder="请输入顺序"/>
                     </el-form-item>
                     <el-form-item
                             label="启用状态"
@@ -106,6 +95,9 @@
                     <el-descriptions-item label="icon链接">
                         {{ formData.icon }}
                     </el-descriptions-item>
+                    <el-form-item label="排序" prop="sort">
+                        <el-input v-model.number="formData.sort" :clearable="true" placeholder="请输入顺序"/>
+                    </el-form-item>
                     <el-descriptions-item label="状态">
                         {{ formatBoolean(formData.status) }}
                     </el-descriptions-item>
@@ -138,6 +130,7 @@
     const formData = ref({
         name: '',
         icon: '',
+        sort: 99,
         status: false,
     })
 
@@ -167,6 +160,18 @@
             }
         ],
         status: [{
+            required: true,
+            message: '',
+            trigger: ['input', 'blur'],
+        },
+        ],
+        sort: [{
+            required: true,
+            message: '',
+            trigger: ['input', 'blur'],
+        },
+        ],
+        type: [{
             required: true,
             message: '',
             trigger: ['input', 'blur'],
@@ -255,13 +260,6 @@
     // 获取需要的字典 可能为空 按需保留
     setOptions()
 
-
-    // 多选数据
-    const multipleSelection = ref([])
-    // 多选
-    const handleSelectionChange = (val) => {
-        multipleSelection.value = val
-    }
 
     // 删除行
     const deleteRow = (row) => {
