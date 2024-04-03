@@ -81,7 +81,7 @@
                             </el-icon>
                             查看详情
                         </el-button>
-                        <el-button type="primary" v-if="scope.row.status == 1" link icon="delete"
+                        <el-button type="warning" v-if="scope.row.status == 1" link icon="el-icon"
                                    @click="refundRow(scope.row)">退费
                         </el-button>
                         <el-button type="primary" v-if="scope.row.status < 1" link icon="delete"
