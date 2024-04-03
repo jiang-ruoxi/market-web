@@ -3,10 +3,41 @@
         <div class="gva-search-box">
             <el-form ref="elSearchFormRef" :inline="true" :model="searchInfo" class="demo-form-inline"
                      :rules="searchRule" @keyup.enter="onSubmit">
-                <el-form-item label="创建日期" prop="createdAt">
+
+                <el-form-item label="用户ID">
+                    <el-input
+                            v-model="searchInfo.userId"
+                            placeholder="用户ID"
+                    />
+                </el-form-item>
+                <el-form-item label="支付状态">
+                    <el-select
+                            v-model="searchInfo.status"
+                            clearable
+                            placeholder="请选择"
+                    >
+                        <el-option
+                                label="已支付"
+                                value="1"
+                        />
+                        <el-option
+                                label="待支付"
+                                value="0"
+                        />
+                        <el-option
+                                label="已取消"
+                                value="-1"
+                        />
+                        <el-option
+                                label="已退费"
+                                value="-3"
+                        />
+                    </el-select>
+                </el-form-item>
+                <el-form-item label="支付日期" prop="createdAt">
                     <template #label>
         <span>
-          创建日期
+          支付日期
           <el-tooltip content="搜索范围是开始日期（包含）至结束日期（不包含）">
             <el-icon><QuestionFilled/></el-icon>
           </el-tooltip>
