@@ -45,6 +45,7 @@
         >
         <el-table-column type="selection" width="55" />
             <el-table-column align="left" label="城市" prop="name" width="120" />
+            <el-table-column align="left" label="排序(倒序)" prop="sort" width="120" />
         <el-table-column align="left" label="创建日期" width="180">
             <template #default="scope">{{ formatDate(scope.row.CreatedAt) }}</template>
         </el-table-column>
