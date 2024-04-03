@@ -12,7 +12,7 @@
                 <el-form-item label="创建日期" prop="createdAt">
                     <template #label>
         <span>
-          创建日期
+          发布日期
           <el-tooltip content="搜索范围是开始日期（包含）至结束日期（不包含）">
             <el-icon><QuestionFilled/></el-icon>
           </el-tooltip>

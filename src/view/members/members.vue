@@ -3,10 +3,22 @@
         <div class="gva-search-box">
             <el-form ref="elSearchFormRef" :inline="true" :model="searchInfo" class="demo-form-inline"
                      :rules="searchRule" @keyup.enter="onSubmit">
+                <el-form-item label="用户ID">
+                    <el-input
+                            v-model="searchInfo.userId"
+                            placeholder="用户ID"
+                    />
+                </el-form-item>
+                <el-form-item label="手机号">
+                    <el-input
+                            v-model="searchInfo.mobile"
+                            placeholder="手机号"
+                    />
+                </el-form-item>
                 <el-form-item label="创建日期" prop="createdAt">
                     <template #label>
         <span>
-          创建日期
+          注册日期
           <el-tooltip content="搜索范围是开始日期（包含）至结束日期（不包含）">
             <el-icon><QuestionFilled/></el-icon>
           </el-tooltip>
