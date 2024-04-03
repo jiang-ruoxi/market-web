@@ -68,9 +68,10 @@
                 </el-table-column>
                 <el-table-column align="center" label="支付状态" prop="status" width="100">
                     <template #default="scope">
-                        <el-tag type="warning" v-if="scope.row.status==0">待支付</el-tag>
+                        <el-tag type="info" v-if="scope.row.status==0">待支付</el-tag>
                         <el-tag type="success" v-if="scope.row.status==1">已支付</el-tag>
-                        <el-tag type="danger" v-if="scope.row.status < 0">已取消</el-tag>
+                        <el-tag type="danger" v-if="scope.row.status == -1">已取消</el-tag>
+                        <el-tag type="warning" v-if="scope.row.status == -3">已退费</el-tag>
                     </template>
                 </el-table-column>
                 <el-table-column align="left" label="操作" min-width="120">
@@ -84,7 +85,7 @@
                         <el-button type="warning" v-if="scope.row.status == 1" link icon="el-icon"
                                    @click="refundRow(scope.row)">退费
                         </el-button>
-                        <el-button type="primary" v-if="scope.row.status < 1" link icon="delete"
+                        <el-button type="primary" v-if="scope.row.status == -1" link icon="delete"
                                    @click="deleteRow(scope.row)">删除
                         </el-button>
                     </template>
@@ -130,9 +131,11 @@
                         {{ formData.numberExt }}
                     </el-descriptions-item>
                     <el-descriptions-item label="支付状态">
-                        <el-tag type="warning" v-if="formData.status==0">待支付</el-tag>
+                        <el-tag type="info" v-if="formData.status==0">待支付</el-tag>
                         <el-tag type="success" v-if="formData.status==1">已支付</el-tag>
-                        <el-tag type="danger" v-if="formData.status < 0">已取消</el-tag>
+                        <el-tag type="danger" v-if="formData.status == -1">已取消</el-tag>
+                        <el-tag type="warning" v-if="formData.status == -3">已退费</el-tag>
+                        <el-tag type="primary" v-if="formData.status == -3">{{formData.refund_time_str}}</el-tag>
                     </el-descriptions-item>
                     <el-descriptions-item label="支付时间">
                         {{ formatDate(formData.payTime) }}
@@ -334,12 +337,18 @@
     // 退费行
     const refundOrdersFunc = async (row) => {
         const res = await refundOrders({ID: row.ID})
-        if (res.code === 0) {
+        console.log(res.data.code)
+        if (res.data.code === 200) {
             ElMessage({
                 type: 'success',
                 message: '退费成功'
             })
             getTableData()
+        } else {
+            ElMessage({
+                type: 'error',
+                message: '退费失败'
+            })
         }
     }
 
