@@ -32,6 +32,7 @@
         </div>
         <div class="gva-table-box">
             <div class="gva-btn-list">
+                <el-button type="primary" icon="plus" @click="openDialog">新增</el-button>
                 <el-popover v-model:visible="deleteVisible" :disabled="!multipleSelection.length" placement="top"
                             width="160">
                     <p>确定要删除吗？</p>
@@ -83,6 +84,8 @@
                             </el-icon>
                             查看详情
                         </el-button>
+                        <el-button type="primary" link icon="edit" class="table-button" @click="updateTasksFunc(scope.row)">变更
+                        </el-button>
                         <el-button type="primary" link icon="delete" @click="deleteRow(scope.row)">删除</el-button>
                     </template>
                 </el-table-column>
@@ -99,9 +102,43 @@
                 />
             </div>
         </div>
+        <el-dialog v-model="dialogFormVisible" :before-close="closeDialog" :title="type==='create'?'添加':'修改'"
+                   destroy-on-close>
+            <el-scrollbar height="300px">
+                <el-form :model="formData" label-position="right" ref="elFormRef" :rules="rule" label-width="80px">
+                    <el-form-item label="任务名称" prop="title">
+                        <el-input v-model="formData.title" :clearable="true" placeholder="请输入名称"/>
+                    </el-form-item>
+                    <el-form-item label="任务描述" prop="desc">
+                        <el-input v-model="formData.desc" :clearable="true" placeholder="请输入任务描述"/>
+                    </el-form-item>
+                    <el-form-item label="工种类型" prop="tagId">
+                        <el-select v-model="formData.tagId" placeholder="请选择" style="width:100%" :clearable="true">
+                            <el-option v-for="item in tag_list" :key="item.ID" :label="item.name" :value="item.ID">
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <el-form-item label="发布用户" prop="userId">
+                        <el-input v-model.number="formData.userId" :clearable="true" placeholder="请输入用户id"/>
+                    </el-form-item>
+                    <el-form-item label="联系方式" prop="mobile">
+                        <el-input v-model="formData.mobile" :clearable="true" placeholder="请输入手机号"/>
+                    </el-form-item>
+                    <el-form-item label="工作地址" prop="address">
+                        <el-input v-model="formData.address" :clearable="true" placeholder="请输入工作地址"/>
+                    </el-form-item>
+                </el-form>
+            </el-scrollbar>
+            <template #footer>
+                <div class="dialog-footer">
+                    <el-button @click="closeDialog">取 消</el-button>
+                    <el-button type="primary" @click="enterDialog">确 定</el-button>
+                </div>
+            </template>
+        </el-dialog>
         <el-dialog v-model="detailShow" style="width: 800px" lock-scroll :before-close="closeDetailShow" title="查看详情"
                    destroy-on-close>
-            <el-scrollbar height="480px">
+            <el-scrollbar height="380px">
                 <el-descriptions column="1" border>
                     <el-descriptions-item label="任务名称">
                         {{ formData.title }}
@@ -113,7 +150,7 @@
                         <el-tag type="primary">{{ formData.tag_name }}</el-tag>
                     </el-descriptions-item>
                     <el-descriptions-item label="发布者ID">
-                        {{ formData.userId }}
+                        {{ formData.userId }}  <el-tag type="primary" v-if="formData.mobile!=''">帮 {{formData.mobile}} 代填写</el-tag>
                     </el-descriptions-item>
                     <el-descriptions-item label="招聘状态">
                         <el-tag type="success" v-if="formData.status==2">已完成</el-tag>
@@ -135,11 +172,17 @@
 
 <script setup>
     import {
+        createTasks,
         deleteTasks,
         deleteTasksByIds,
+        updateTasks,
         findTasks,
         getTasksList
     } from '@/api/tasks'
+
+    import {
+        getTagListAll
+    } from '@/api/tags'
 
     // 全量引入格式化工具 请按需保留
     import {getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile} from '@/utils/format'
@@ -152,17 +195,40 @@
 
     // 自动化生成的字典（可能为空）以及字段
     const formData = ref({
-        title: '',
-        desc: '',
-        tagId: '',
-        userId: '',
-        status: '',
-        address: '',
+        title: "",
+        desc: "",
+        tagId: "",
+        userId: "",
+        mobile: "",
     })
 
 
     // 验证规则
-    const rule = reactive({})
+    const rule = reactive({
+        title: [{
+            required: true,
+            message: '',
+            trigger: ['input', 'blur'],
+        },
+            {
+                whitespace: true,
+                message: '不能只输入空格',
+                trigger: ['input', 'blur'],
+            }
+        ],
+        desc: [{
+            required: true,
+            message: '',
+            trigger: ['input', 'blur'],
+        },
+        ],
+        tagId: [{
+            required: true,
+            message: '',
+            trigger: ['input', 'blur'],
+        },
+        ],
+    })
 
     const searchRule = reactive({
         createdAt: [
@@ -300,6 +366,16 @@
     const type = ref('')
 
 
+    // 更新行
+    const updateTasksFunc = async (row) => {
+        const res = await findTasks({ID: row.ID})
+        type.value = 'update'
+        if (res.code === 0) {
+            formData.value = res.data.retasks
+            dialogFormVisible.value = true
+        }
+    }
+
     // 审核行
     const verifyTasksFunc = async (row) => {
         const res = await findTasks({ID: row.ID})
@@ -358,9 +434,15 @@
             desc: '',
             tagId: 0,
             userId: 0,
-            status: false,
             address: '',
         }
+    }
+
+
+    // 打开弹窗
+    const openDialog = () => {
+        type.value = 'create'
+        dialogFormVisible.value = true
     }
 
     // 关闭弹窗
@@ -371,10 +453,46 @@
             desc: '',
             tagId: 0,
             userId: 0,
-            status: false,
             address: '',
         }
     }
+    // 弹窗确定
+    const enterDialog = async () => {
+        elFormRef.value?.validate(async (valid) => {
+            if (!valid) return
+            let res
+            switch (type.value) {
+                case 'create':
+                    res = await createTasks(formData.value)
+                    break
+                case 'update':
+                    res = await updateTasks(formData.value)
+                    break
+                default:
+                    res = await createTasks(formData.value)
+                    break
+            }
+            if (res.code === 0) {
+                ElMessage({
+                    type: 'success',
+                    message: '创建/更改成功'
+                })
+                closeDialog()
+                getTableData()
+            }
+        })
+    }
+
+
+    //初始化下拉选择项
+    const tag_list = ref();
+    const getTagListData = async () => {
+        const res = await getTagListAll();
+        if (res.code === 0) {
+            tag_list.value = res.data.list;
+        }
+    };
+    getTagListData();
 </script>
 
 <style>
