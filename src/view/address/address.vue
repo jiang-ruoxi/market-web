@@ -155,8 +155,8 @@
     const formData = ref({
         name: '',
         sort: 99,
-        is_hot: 0,
-        parent_id: ''
+        is_hot: false,
+        parent_id: 0
     })
 
     // 验证规则
@@ -173,12 +173,6 @@
             }
         ],
         sort: [{
-            required: true,
-            message: '',
-            trigger: ['input', 'blur'],
-        },
-        ],
-        parent_id: [{
             required: true,
             message: '',
             trigger: ['input', 'blur'],
