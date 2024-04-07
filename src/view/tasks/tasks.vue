@@ -124,8 +124,11 @@
                     <el-form-item label="联系方式" prop="mobile">
                         <el-input v-model="formData.mobile" :clearable="true" placeholder="请输入手机号"/>
                     </el-form-item>
-                    <el-form-item label="工作地址" prop="address">
-                        <el-input v-model="formData.address" :clearable="true" placeholder="请输入工作地址"/>
+                    <el-form-item label="工作地址" prop="address_id">
+                        <el-select v-model="formData.address_id" placeholder="请选择" style="width:100%" :clearable="true">
+                            <el-option v-for="item in address_list" :key="item.ID" :label="item.name" :value="item.ID">
+                            </el-option>
+                        </el-select>
                     </el-form-item>
                 </el-form>
             </el-scrollbar>
@@ -184,6 +187,10 @@
         getTagListAll
     } from '@/api/tags'
 
+    import {
+        getAddressChildList
+    } from '@/api/address'
+
     // 全量引入格式化工具 请按需保留
     import {getDictFunc, formatDate, formatBoolean, filterDict, ReturnArrImg, onDownloadFile} from '@/utils/format'
     import {ElMessage, ElMessageBox} from 'element-plus'
@@ -200,6 +207,7 @@
         tagId: "",
         userId: "",
         mobile: "",
+        address_id:""
     })
 
 
@@ -223,6 +231,12 @@
         },
         ],
         tagId: [{
+            required: true,
+            message: '',
+            trigger: ['input', 'blur'],
+        },
+        ],
+        address_id: [{
             required: true,
             message: '',
             trigger: ['input', 'blur'],
@@ -493,6 +507,16 @@
         }
     };
     getTagListData();
+
+    //初始化下拉选择项
+    const address_list = ref();
+    const getAddressChildListData = async () => {
+        const res = await getAddressChildList();
+        if (res.code === 0) {
+            address_list.value = res.data.list;
+        }
+    };
+    getAddressChildListData();
 </script>
 
 <style>
