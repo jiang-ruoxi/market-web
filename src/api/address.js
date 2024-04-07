@@ -95,3 +95,19 @@ export const getAddressList = (params) => {
     params
   })
 }
+
+// @Tags Address
+// @Summary 分页获取zmAddress表列表
+// @Security ApiKeyAuth
+// @accept application/json
+// @Produce application/json
+// @Param data query request.PageInfo true "分页获取zmAddress表列表"
+// @Success 200 {string} string "{"success":true,"data":{},"msg":"获取成功"}"
+// @Router /zmAddress/getAddressAllList [get]
+export const getAddressAllList = (params) => {
+  return service({
+    url: '/zmAddress/getAddressAllList',
+    method: 'get',
+    params
+  })
+}
